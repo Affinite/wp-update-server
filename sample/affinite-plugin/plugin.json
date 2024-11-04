@@ -1,0 +1,21 @@
+{
+  "name": "Affinite plugin",
+  "slug": "affinite-plugin",
+  "author": "<a href='https://affinite.io'>Affinite</a>",
+  "author_profile": "https://affinite.io",
+  "version": "1.0.0",
+  "download_url": "",
+  "requires": "6.4",
+  "tested": "6.4.0",
+  "requires_php": "8.0",
+  "last_updated": "2024-11-01 00:00:00",
+  "sections": {
+    "description": "Affinite plugin",
+    "installation": "<ul><li>Upload folder <code>affinite-plugin</code> to directory <code>/wp-content/plugins/</code>.</li><li>Activate plugin on your WordPress admin Plugins page <strong> (Plugins > Installed plugins)</strong>.</li></ul>",
+    "changelog": "<h4>Releases</h4><ul><li>1.0.0 - Initital release.</li></ul>"
+  },
+  "banners": {
+    "low": "",
+    "high": ""
+  }
+}
