@@ -53,4 +53,4 @@ Example: `SERVER_HOST/?plugin=<plugin_slug>&version=1.0.0&download=true`
 
 ## License
 
-[MIT](wp-update-server/LICENSE)
+[MIT](LICENSE)
