@@ -72,7 +72,7 @@ class UpdateServer extends Server
         if ( isset( $_GET['download'] ) && '1' === htmlspecialchars( $_GET['download'] ) ) {
             $this->logger?->write( sprintf( 'plugin_download: %s (%s)', $this->plugin, $this->version ?? 'latest' ) );
 
-            Response::file( $this->get_download_url() );
+            Response::file( $this->get_download_path() );
         } else {
             $this->logger?->write( sprintf( 'update_check: %s (%s)', $this->plugin, $this->version ?? 'latest' ) );
 
@@ -154,6 +154,12 @@ class UpdateServer extends Server
         $version_folder = $this->get_version_folder();
 
         return sprintf( '%s/%s/%s.zip', $plugin_uri, $version_folder, $this->plugin );
+    }
+
+    private function get_download_path(): string {
+        $version_folder = $this->get_version_folder();
+
+        return sprintf( '%s/%s/%s.zip', $this->path, $version_folder, $this->plugin );
     }
 
     /**

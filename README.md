@@ -47,9 +47,9 @@ Depends on your settings in `src/Server.php` you can send `GET` request to `SERV
 ### Parameters
 - `plugin` **(required)**
 - `version` **(optional)**
-- `download` **(optional)** with value `true` to force download plugin `.zip` file. If `version` is specified then this version will be downloaded.
+- `download` **(optional)** with value `1` to force download plugin `.zip` file. If `version` is specified then this version will be downloaded.
 
-Example: `SERVER_HOST/?plugin=<plugin_slug>&version=1.0.0&download=true`
+Example: `SERVER_HOST/?plugin=<plugin_slug>&version=1.0.0&download=1`
 
 ## License
 
