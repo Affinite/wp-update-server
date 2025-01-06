@@ -21,6 +21,15 @@ abstract class Server
     /** @var ?Logger $logger  */
     protected ?Logger $logger = null;
 
+    /** @var string LICENSE_HOST */
+    protected const LICENSE_HOST = '';
+
+    /** @var string LICENSE_HTTP_USER */
+    protected const LICENSE_HTTP_USER = '';
+
+    /** @var string LICENSE_HTTP_PASSWORD */
+    protected const LICENSE_HTTP_PASSWORD = '';
+
     public function __construct() {
         $this->logger = new Logger( self::LOG_DIR );
     }

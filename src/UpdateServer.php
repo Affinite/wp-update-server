@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Affinite\WpUpdater;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
+
 require_once __DIR__ . '/Server.php';
 
 /**
@@ -67,6 +70,14 @@ class UpdateServer extends Server
             Response::error( 404, 'Invalid plugin version' );
         }
 
+        if ( true === $this->data['license'] ) {
+            $license_valid = $this->license_valid();
+
+            if ( false === $license_valid ) {
+                Response::error( 401, 'Invalid license' );
+            }
+        }
+
         $this->data['version'] = $this->version ?? $this->data['version'];
 
         if ( isset( $_GET['download'] ) && '1' === htmlspecialchars( $_GET['download'] ) ) {
@@ -82,6 +93,81 @@ class UpdateServer extends Server
 
             Response::success( $this->data );
         }
+    }
+
+    /**
+     * Is license valid?
+     *
+     * @return bool
+     */
+    private function license_valid(): bool {
+        if ( isset( $_GET['license'] ) && '' !== $_GET['license'] ) {
+            $license = trim( htmlspecialchars( $_GET['license'] ) );
+
+            return $this->validate_license( $license );
+        }
+
+        return false;
+    }
+
+    private function validate_license( string $license ): bool
+    {
+        if ( '' === self::LICENSE_HOST ) {
+            return true;
+        }
+
+        if ( '' !== self::LICENSE_HTTP_USER && '' !== self::LICENSE_HTTP_PASSWORD ) {
+            $config = array(
+                'auth' => array(
+                    self::LICENSE_HTTP_USER,
+                    self::LICENSE_HTTP_PASSWORD,
+                ),
+            );
+        } else {
+            $config = array();
+        }
+
+        $client = new Client( $config );
+
+        try {
+            $response = $client->request( 'GET', sprintf( '%s%s', self::LICENSE_HOST, $license ) );
+        } catch ( GuzzleException $e ) {
+            return false;
+        }
+
+        $status_code = $response->getStatusCode();
+
+        if ( 200 !== $status_code ) {
+            return false;
+        }
+
+        $body = $response->getBody()->getContents();
+
+        try {
+            $body_object = json_decode($body, false, 512, JSON_THROW_ON_ERROR);
+        } catch ( \JsonException $e ) {
+            return false;
+        }
+
+        if ( isset( $body_object->success ) && true === $body_object->success ) {
+            $body_data = $body_object->data;
+
+            $current_date = new \DateTimeImmutable();
+            $expire_date = null !== $body_data->expiresAt ? \DateTimeImmutable::createFromFormat( 'Y-m-d H:i:s', $body_data->expiresAt ) : null;
+            $plugin_slug = isset( $this->data['slug'] ) ? (string) $this->data['slug'] : null;
+
+            if ( null !== $expire_date && $expire_date < $current_date ) {
+                return false;
+            }
+
+            if ( null !== $body_data->pluginSlug && (string) $body_data->pluginSlug !== $plugin_slug ) {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -150,10 +236,15 @@ class UpdateServer extends Server
      * @return string
      */
     private function get_download_url(): string {
-        $plugin_uri = $this->get_plugin_uri();
         $version_folder = $this->get_version_folder();
 
-        return sprintf( '%s/%s/%s.zip', $plugin_uri, $version_folder, $this->plugin );
+        if ( isset( $this->data['license'] ) && true === $this->data['license'] ) {
+            $license = isset( $_GET['license'] ) ? trim( htmlspecialchars( $_GET['license'] ) ) : '';
+
+            return sprintf( '%s/?plugin=%s&version=%s&license=%s&download=1', self::SERVER_HOST, $this->plugin, $version_folder, $license );
+        }
+
+        return sprintf( '%s/?plugin=%s&version=%s&download=1', self::SERVER_HOST, $this->plugin, $version_folder );
     }
 
     private function get_download_path(): string {

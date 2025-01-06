@@ -1,0 +1,27 @@
+{
+    "name": "affinite/update-server",
+    "description": "WordPress plugin update server",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Affinite",
+            "email": "info@affinite.io"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "guzzlehttp/guzzle": "^7.9"
+    }
+    ,
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    },
+    "config": {
+        "platform": {
+            "php": "8.0"
+        },
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "platform-check": false
+    }
+}

@@ -42,6 +42,8 @@ class Logger {
         $date = date( 'Y-m-d H:i:s' );
         $log_message = sprintf( '[%s] [%s] %s', $date, $level, $message ) . PHP_EOL;
 
-        file_put_contents( $this->file_path, $log_message, FILE_APPEND | LOCK_EX );
+        if ( null !== $this->file_path ) {
+            file_put_contents( $this->file_path, $log_message, FILE_APPEND | LOCK_EX );
+        }
     }
 }

@@ -12,7 +12,9 @@ Installation
 1. Copy all files to your destination
 2. Open `src/Server.php`
 3. Edit `SERVER_HOST` and `LOG_DIR`
-4. Done!
+4. **optional**: If you download source code you need to install dependencies with composer. Run `composer install` to install dependencies
+5. **optional**: If you need validate license do not forget to edit `LICENSE_HOST` (also `LICENSE_HTTP_USER` and `LICENSE_HTTP_PASSWORD` for auth) in `src/Server.php`
+6. Done!
 
 Usage
 -----------
@@ -48,8 +50,9 @@ Depends on your settings in `src/Server.php` you can send `GET` request to `SERV
 - `plugin` **(required)**
 - `version` **(optional)**
 - `download` **(optional)** with value `1` to force download plugin `.zip` file. If `version` is specified then this version will be downloaded.
+- `license` **(required)** if `license` parameter is set to `true` in `plugin.json`
 
-Example: `SERVER_HOST/?plugin=<plugin_slug>&version=1.0.0&download=1`
+Example: `SERVER_HOST/?plugin=<plugin_slug>&version=1.0.0&download=1&license=abcd123`
 
 ## License
 

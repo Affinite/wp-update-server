@@ -9,6 +9,7 @@
   "tested": "6.4.0",
   "requires_php": "8.0",
   "last_updated": "2024-11-01 00:00:00",
+  "license": true,
   "sections": {
     "description": "Affinite plugin",
     "installation": "<ul><li>Upload folder <code>affinite-plugin</code> to directory <code>/wp-content/plugins/</code>.</li><li>Activate plugin on your WordPress admin Plugins page <strong> (Plugins > Installed plugins)</strong>.</li></ul>",
