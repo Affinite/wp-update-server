@@ -20,11 +20,17 @@ class UpdateServer extends Server
     /** @var string|null Requested plugin version */
     private ?string $version = null;
 
+    /** @var string|null Plugin license */
+    private ?string $license = null;
+
     /** @var string Plugin path */
     private string $path;
 
     /** @var array Plugin data from json */
     private array $data = array();
+
+    /** @var null|bool Is plugin license activated? */
+    private ?bool $activated = null;
 
     /**
      * Lets cook
@@ -52,8 +58,16 @@ class UpdateServer extends Server
             $this->set_version( $_GET['version'] );
         }
 
-        $this->set_path();
-        $this->data = $this->get_plugin_data();
+        if ( isset( $_GET['license'] ) ) {
+            $this->set_license( $_GET['license'] );
+        }
+
+        if ( isset( $_GET['activate'] ) && '1' === $_GET['activate'] && ! empty( $this->license ) ) {
+            $this->activated = $this->activate_license();
+        } else {
+            $this->set_path();
+            $this->data = $this->get_plugin_data();
+        }
     }
 
     /**
@@ -68,6 +82,12 @@ class UpdateServer extends Server
 
         if ( ! $this->plugin_version_exists() ) {
             Response::error( 404, 'Invalid plugin version' );
+        }
+
+        if ( null !== $this->activated ) {
+            Response::success( array(
+                'success' => $this->activated,
+            ) );
         }
 
         if ( true === $this->data['license'] ) {
@@ -170,6 +190,56 @@ class UpdateServer extends Server
         return false;
     }
 
+    private function activate_license(): bool
+    {
+        if ( '' === self::LICENSE_HOST || empty( $this->license ) ) {
+            return false;
+        }
+
+        if ( '' !== self::LICENSE_HTTP_USER && '' !== self::LICENSE_HTTP_PASSWORD ) {
+            $config = array(
+                'auth' => array(
+                    self::LICENSE_HTTP_USER,
+                    self::LICENSE_HTTP_PASSWORD,
+                ),
+            );
+        } else {
+            $config = array();
+        }
+
+        $client = new Client( $config );
+
+        try {
+            $response = $client->request( 'GET', sprintf( '%sactivate/%s', self::LICENSE_HOST, $this->license ) );
+        } catch ( GuzzleException $e ) {
+            return false;
+        }
+
+        $status_code = $response->getStatusCode();
+
+        if ( 200 !== $status_code ) {
+            return false;
+        }
+
+        $body = $response->getBody()->getContents();
+
+        try {
+            $body_object = json_decode($body, false, 512, JSON_THROW_ON_ERROR);
+        } catch ( \JsonException $e ) {
+            return false;
+        }
+
+        if ( isset( $body_object->success ) && true === $body_object->success ) {
+            if ( ! empty( $body_object->errors ) )  {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Set plugin slug property
      *
@@ -190,6 +260,17 @@ class UpdateServer extends Server
      */
     private function set_version( string $version ): void {
         $this->version = htmlspecialchars( $version );
+    }
+
+    /**
+     * Set requested plugin license property
+     *
+     * @param string $license
+     *
+     * @return void
+     */
+    private function set_license( string $license ): void {
+        $this->license = htmlspecialchars( $license );
     }
 
     /**

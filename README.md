@@ -51,6 +51,7 @@ Depends on your settings in `src/Server.php` you can send `GET` request to `SERV
 - `version` **(optional)**
 - `download` **(optional)** with value `1` to force download plugin `.zip` file. If `version` is specified then this version will be downloaded.
 - `license` **(required)** if `license` parameter is set to `true` in `plugin.json`
+- `activate` **(optional)** if `activated` value is `1` server will try to activate license and send response
 
 Example: `SERVER_HOST/?plugin=<plugin_slug>&version=1.0.0&download=1&license=abcd123`
 
